@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+<title>Deck</title>
+<style>
+:root{--bg:#070A12;--p:rgba(255,255,255,.06);--bd:rgba(255,255,255,.12);--t:#EAF0FF;--m:rgba(234,240,255,.72);
+--a:#7C5CFF;--b:#2DE2A6;--sh:0 18px 60px rgba(0,0,0,.45)}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;color:var(--t);font:15px/1.32 Sora,system-ui;background:
+radial-gradient(900px 600px at 12% 12%,rgba(124,92,255,.22),transparent 58%),
+radial-gradient(900px 600px at 88% 18%,rgba(45,226,166,.16),transparent 58%),
+linear-gradient(180deg,#050714,var(--bg))}
+
+#d{
+  height:100vh;
+  overflow:auto;
+  scroll-snap-type:y mandatory;
+  scroll-padding-top:14px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--a) rgba(255,255,255,.08)
+}
+#d::-webkit-scrollbar{width:12px}
+#d::-webkit-scrollbar-track{background:rgba(255,255,255,.06)}
+#d::-webkit-scrollbar-thumb{
+  border-radius:999px;border:2px solid rgba(0,0,0,.35);
+  background:linear-gradient(180deg,var(--a),var(--b));
+  box-shadow:0 0 18px rgba(124,92,255,.25)
+}
+
+.s{
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+  padding:14px 14px;
+  display:flex;
+  justify-content:center;
+}
+.s:not(:first-child){padding-top:6px}
+.w{width:min(980px,100%);display:grid;gap:8px}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pill{
+  display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border:1px solid var(--bd);border-radius:999px;
+  background:rgba(0,0,0,.22);color:var(--m);backdrop-filter:blur(10px)
+}
+
+h1{margin:0;font:46px/1.02 "DM Serif Display",serif}
+h2{margin:0;font:700 20px/1.12 Sora}
+p,ul{margin:0;color:var(--m)}
+ul{margin-top:6px;padding-left:18px}
+.grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+
+.card{border:1px solid var(--bd);background:var(--p);border-radius:18px;padding:12px;backdrop-filter:blur(12px)}
+.tilt{
+  --rx:0deg;--ry:0deg;
+  transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition:transform .12s ease,box-shadow .2s ease;
+  will-change:transform;position:relative;overflow:hidden
+}
+.tilt:hover{box-shadow:var(--sh)}
+.tilt:before{content:"";position:absolute;inset:-2px;opacity:.55;pointer-events:none;background:
+radial-gradient(520px 260px at 18% 12%,rgba(124,92,255,.18),transparent 60%),
+radial-gradient(520px 260px at 82% 18%,rgba(45,226,166,.12),transparent 60%)}
+.tilt>*{position:relative}
+
+table{width:100%;border-collapse:separate;border-spacing:0;margin-top:8px;overflow:hidden;border-radius:14px}
+th,td{border:1px solid var(--bd);padding:9px 10px;vertical-align:top}
+th{background:rgba(0,0,0,.28);color:var(--t);text-align:left;font-weight:700}
+td{background:rgba(255,255,255,.03);color:var(--m)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:.95em;color:rgba(234,240,255,.82)}
+small{color:rgba(234,240,255,.58)}
+
+.f{
+  position:fixed;left:16px;right:16px;bottom:14px;
+  display:flex;justify-content:space-between;pointer-events:none;
+  color:var(--m);font-size:12px
+}
+@media (max-width:860px){h1{font-size:38px}}
+</style>
+</head>
+
+<body>
+<div id="d">
+
+  <!-- 1) Portada -->
+  <section class="s"><div class="w">
+    <div class="top"><span class="pill">Juan Diego</span><span class="pill" id="c"></span></div>
+    <div class="card tilt">
+      <h1>Taxonomía & Nomenclatura</h1>
+      <p style="margin-top:6px">Data Warehouse de Ventas (retail) a partir de <code>ventas_raw.csv</code>.</p>
+      <div class="grid" style="margin-top:8px">
+        <div class="card tilt"><h2>Hecho</h2><p>Ventas (detalle)</p></div>
+        <div class="card tilt"><h2>Dimensiones</h2><p>Fecha · Cliente · Producto · Tienda · Geografía</p></div>
+        <div class="card tilt"><h2>Modelo</h2><p>Estrella + convención BI</p></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 2) Taxonomía -->
+  <section class="s"><div class="w">
+    <div class="top"><span class="pill">Taxonomía</span><span class="pill">2</span></div>
+    <div class="grid">
+      <div class="card tilt">
+        <h2>Tabla de hechos</h2>
+        <p style="margin-top:6px"><b style="color:var(--a)">fact_ventas_detalle</b> <small>(1 fila por línea de venta)</small></p>
+        <ul>
+          <li><b>FK:</b> <code>sk_fecha</code>, <code>sk_cliente</code>, <code>sk_producto</code>, <code>sk_tienda</code></li>
+          <li><b>Degenerada:</b> <code>id_venta</code></li>
+          <li><b>Medidas:</b> <code>num_cantidad</code>, <code>amt_precio_unitario</code>, <code>amt_venta_linea</code>, <code>amt_venta_total_txn</code></li>
+        </ul>
+      </div>
+
+      <div class="card tilt">
+        <h2>Dimensiones necesarias</h2>
+        <ul style="margin-top:6px">
+          <li><b style="color:var(--b)">dim_fecha</b></li>
+          <li><b style="color:var(--b)">dim_cliente</b></li>
+          <li><b style="color:var(--b)">dim_producto</b></li>
+          <li><b style="color:var(--b)">dim_tienda</b></li>
+          <li><b style="color:var(--b)">dim_geografia</b></li>
+        </ul>
+      </div>
+
+      <div class="card tilt">
+        <h2>Definición de grano</h2>
+        <ul style="margin-top:6px">
+          <li>Unidad mínima: compra de un producto en una tienda en una fecha.</li>
+          <li>Permite sumar por tiempo, categoría, región, etc.</li>
+          <li>Evita ambigüedad al analizar precio/cantidad por producto.</li>
+        </ul>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 3) Dimensiones -->
+  <section class="s"><div class="w">
+    <div class="top"><span class="pill">Dimensiones</span><span class="pill">3</span></div>
+    <div class="grid">
+      <div class="card tilt">
+        <h2>dim_fecha</h2>
+        <p style="margin-top:6px"><b>Jerarquía:</b> Año → Trimestre → Mes → Día</p>
+        <p style="margin-top:6px"><b>Atributos:</b> <code>sk_fecha</code>, <code>dt_fecha</code>, <code>num_anio</code>, <code>num_trimestre</code>, <code>num_mes</code>, <code>txt_mes</code>, <code>num_dia_mes</code>, <code>txt_dia_semana</code>, <code>flg_fin_semana</code></p>
+      </div>
+
+      <div class="card tilt">
+        <h2>dim_cliente</h2>
+        <p style="margin-top:6px"><b>Jerarquía:</b> Rango_edad → Cliente</p>
+        <p style="margin-top:6px"><b>Atributos:</b> <code>sk_cliente</code>, <code>txt_nombre_cliente</code>, <code>txt_genero</code>, <code>num_edad</code>, <code>txt_rango_edad</code></p>
+      </div>
+
+      <div class="card tilt">
+        <h2>dim_producto</h2>
+        <p style="margin-top:6px"><b>Jerarquía:</b> Categoría → Producto</p>
+        <p style="margin-top:6px"><b>Atributos:</b> <code>sk_producto</code>, <code>txt_nombre_producto</code>, <code>txt_categoria_producto</code></p>
+      </div>
+
+      <div class="card tilt">
+        <h2>dim_geografia</h2>
+        <p style="margin-top:6px"><b>Jerarquía:</b> País → Región → Ciudad</p>
+        <p style="margin-top:6px"><b>Atributos:</b> <code>sk_geografia</code>, <code>txt_pais</code>, <code>txt_region</code>, <code>txt_ciudad</code></p>
+      </div>
+
+      <div class="card tilt">
+        <h2>dim_tienda</h2>
+        <p style="margin-top:6px"><b>Jerarquía:</b> Tienda → (Geografía)</p>
+        <p style="margin-top:6px"><b>Atributos:</b> <code>sk_tienda</code>, <code>txt_nombre_tienda</code>, <code>sk_geografia</code></p>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 4) Nomenclatura -->
+  <section class="s"><div class="w">
+    <div class="top"><span class="pill">Nomenclatura</span><span class="pill">4</span></div>
+    <div class="grid">
+      <div class="card tilt">
+        <h2>Reglas</h2>
+        <ul style="margin-top:6px">
+          <li>Tablas: <code>fact_...</code>, <code>dim_...</code></li>
+          <li>Claves: <code>sk_...</code> (surrogate), <code>id_...</code> (negocio/transacción)</li>
+          <li>Formato: <code>snake_case</code></li>
+        </ul>
+      </div>
+
+      <div class="card tilt">
+        <h2>Prefijos</h2>
+        <ul style="margin-top:6px">
+          <li><code>dt_</code> fecha</li>
+          <li><code>num_</code> numérico</li>
+          <li><code>amt_</code> monto</li>
+          <li><code>txt_</code> texto</li>
+          <li><code>flg_</code> bandera</li>
+        </ul>
+      </div>
+
+      <div class="card tilt">
+        <h2>Aplicación</h2>
+        <ul style="margin-top:6px">
+          <li><code>amt_venta_linea</code> = <code>num_cantidad</code> × <code>amt_precio_unitario</code></li>
+          <li><code>amt_venta_total_txn</code> para validación vs fuente</li>
+          <li><code>id_venta</code> para trazabilidad transaccional</li>
+        </ul>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 5) Tablas y columnas -->
+  <section class="s"><div class="w">
+    <div class="top"><span class="pill">Tablas y columnas</span><span class="pill">5</span></div>
+    <div class="card tilt">
+      <h2>Diccionario (resumen)</h2>
+
+      <div class="card tilt" style="margin-top:8px">
+        <h2>fact_ventas_detalle</h2>
+        <table>
+          <thead><tr><th>Tipo</th><th>Columnas</th></tr></thead>
+          <tbody>
+            <tr><td>FK</td><td><code>sk_fecha</code>, <code>sk_cliente</code>, <code>sk_producto</code>, <code>sk_tienda</code></td></tr>
+            <tr><td>Degenerada</td><td><code>id_venta</code></td></tr>
+            <tr><td>Medidas</td><td><code>num_cantidad</code>, <code>amt_precio_unitario</code>, <code>amt_venta_linea</code>, <code>amt_venta_total_txn</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid" style="margin-top:8px">
+        <div class="card tilt">
+          <h2>dim_fecha</h2>
+          <table><thead><tr><th>Columnas</th></tr></thead>
+          <tbody><tr><td><code>sk_fecha</code>, <code>dt_fecha</code>, <code>num_anio</code>, <code>num_trimestre</code>, <code>num_mes</code>, <code>txt_mes</code>, <code>num_dia_mes</code>, <code>txt_dia_semana</code>, <code>flg_fin_semana</code></td></tr></tbody></table>
+        </div>
+
+        <div class="card tilt">
+          <h2>dim_cliente</h2>
+          <table><thead><tr><th>Columnas</th></tr></thead>
+          <tbody><tr><td><code>sk_cliente</code>, <code>txt_nombre_cliente</code>, <code>txt_genero</code>, <code>num_edad</code>, <code>txt_rango_edad</code></td></tr></tbody></table>
+        </div>
+
+        <div class="card tilt">
+          <h2>dim_producto</h2>
+          <table><thead><tr><th>Columnas</th></tr></thead>
+          <tbody><tr><td><code>sk_producto</code>, <code>txt_nombre_producto</code>, <code>txt_categoria_producto</code></td></tr></tbody></table>
+        </div>
+
+        <div class="card tilt">
+          <h2>dim_geografia</h2>
+          <table><thead><tr><th>Columnas</th></tr></thead>
+          <tbody><tr><td><code>sk_geografia</code>, <code>txt_pais</code>, <code>txt_region</code>, <code>txt_ciudad</code></td></tr></tbody></table>
+        </div>
+
+        <div class="card tilt">
+          <h2>dim_tienda</h2>
+          <table><thead><tr><th>Columnas</th></tr></thead>
+          <tbody><tr><td><code>sk_tienda</code>, <code>txt_nombre_tienda</code>, <code>sk_geografia</code></td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 6) Justificación -->
+  <section class="s"><div class="w">
+    <div class="top"><span class="pill">Justificación</span><span class="pill">6</span></div>
+    <div class="card tilt">
+      <h2>Decisiones BI!!</h2>
+      <ul style="margin-top:6px">
+        <li>Modelo estrella simplifica consultas y mejora agregaciones.</li>
+        <li>Grano “línea de venta” habilita análisis preciso por producto/cantidad/precio.</li>
+        <li><code>dim_fecha</code> soporta series de tiempo y drill-down sin cálculos repetidos.</li>
+        <li><code>dim_producto</code> con categoría→producto facilita análisis de mix y portafolio.</li>
+        <li><code>dim_geografia</code> estandariza comparaciones por ubicación.</li>
+        <li><code>dim_tienda</code> separa punto de venta y permite atributos futuros.</li>
+        <li>Claves <code>sk_</code> estabilizan el DW y permiten cambios controlados (SCD si aplica).</li>
+        <li>Prefijos (<code>dt_</code>, <code>amt_</code>, <code>num_</code>, <code>txt_</code>, <code>flg_</code>) mejoran lectura y gobernanza.</li>
+      </ul>
+    </div>
+  </div></section>
+
+</div>
+
+<div class="f"><span>↑ ↓ navegar</span><span>Sora · DM Serif</span></div>
+
+<script>
+const d=document.getElementById("d");
+const c=document.getElementById("c");
+const s=[...document.querySelectorAll(".s")];
+const n=s.length;
+
+// contador compatible con secciones de altura variable
+function currentIndex(){
+  const y=d.scrollTop + 16; // pequeño offset
+  let best=0, bestDist=Infinity;
+  for(let i=0;i<n;i++){
+    const dist=Math.abs(s[i].offsetTop - y);
+    if(dist<bestDist){bestDist=dist; best=i;}
+  }
+  return best;
+}
+function upd(){ c.textContent = `${currentIndex()+1}/${n}`; }
+d.addEventListener("scroll",upd,{passive:true});
+addEventListener("resize",upd);
+upd();
+
+addEventListener("keydown",e=>{
+  const down=["ArrowDown","PageDown"].includes(e.key);
+  const up=["ArrowUp","PageUp"].includes(e.key);
+  if(!down&&!up) return;
+  e.preventDefault();
+  const i=currentIndex() + (down?1:-1);
+  s[Math.max(0,Math.min(n-1,i))].scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+// tilt
+document.querySelectorAll(".tilt").forEach(el=>{
+  let raf=0;
+  const z=()=>{el.style.setProperty("--rx","0deg");el.style.setProperty("--ry","0deg")};
+  el.addEventListener("pointermove",e=>{
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(()=>{
+      const r=el.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width-.5;
+      const py=(e.clientY-r.top)/r.height-.5;
+      el.style.setProperty("--ry",`${px*10}deg`);
+      el.style.setProperty("--rx",`${-py*10}deg`);
+    });
+  });
+  el.addEventListener("pointerleave",z);
+});
+</script>
+</body>
+</html>
